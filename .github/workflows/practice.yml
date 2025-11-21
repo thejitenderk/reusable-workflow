@@ -8,7 +8,7 @@ on:
         type: string
       image_name:
         default: ubuntu-latest
-        required: true
+        required: false
         type: string
       stepname:
         default: jitenderkapipeline
