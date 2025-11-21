@@ -1,0 +1,24 @@
+on:
+  workflow_call:
+    inputs:
+      environment:
+        description: 'A username passed from the caller workflow'
+        default: 'dev'
+        required: false
+        type: string
+      image_name:
+        default: ubuntu-latest
+        required: true
+        type: string
+      stepname:
+        default: jitenderkapipeline
+        required: false
+        type: string
+
+jobs:
+  greeting:
+    runs-on: ${{inputs.image_name}}
+    steps:
+      - name: ${{inputs.stepname}}
+        run: |
+          echo Hello this pipeline running on ${{inputs.image_name}} and steps name is ${{inputs.stepname}} and environment is ${{inputs.environment}}
