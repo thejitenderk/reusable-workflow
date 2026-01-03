@@ -1,24 +1,44 @@
+name: Node.js Build Pipeline
+
 on:
   workflow_call:
     inputs:
-      environment:
-        description: 'A username passed from the caller workflow'
-        default: 'dev'
-        required: false
+      node_version:
+        description: "Node.js version"
+        required: true
         type: string
-      image_name:
-        default: ubuntu-latest
-        required: false
+      build_command:
+        description: "Build command"
+        required: true
         type: string
-      stepname:
-        default: jitenderkapipeline
-        required: false
+      artifact_path:
+        description: "Build output directory"
+        required: true
         type: string
 
 jobs:
-  greeting:
-    runs-on: ${{inputs.image_name}}
+  build:
+    name: Build Node.js Application
+    runs-on: ubuntu-latest
+
     steps:
-      - name: ${{inputs.stepname}}
-        run: |
-          echo Hello this pipeline running on ${{inputs.image_name}} and steps name is ${{inputs.stepname}} and environment is ${{inputs.environment}}
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node_version }}
+          cache: npm
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Run Build
+        run: ${{ inputs.build_command }}
+
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-${{ github.run_id }}
+          path: ${{ inputs.artifact_path }}
