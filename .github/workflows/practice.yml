@@ -14,7 +14,7 @@ on:
         type: string
 
       working_directory:
-        required: false
+        required: true
         type: string
         default: "environment"
 
