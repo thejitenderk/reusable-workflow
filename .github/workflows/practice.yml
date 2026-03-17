@@ -1,44 +1,61 @@
-name: Node.js Build Pipeline
+name: Terraform Infra Pipeline
 
 on:
   workflow_call:
     inputs:
-      node_version:
-        description: "Node.js version"
+
+      terraform_version:
+        required: false
+        type: string
+        default: "1.6.6"
+
+      environment:
         required: true
         type: string
-      build_command:
-        description: "Build command"
-        required: true
+
+      working_directory:
+        required: false
         type: string
-      artifact_path:
-        description: "Build output directory"
+        default: "environment"
+
+    secrets:
+      AZURE_CREDENTIALS:
         required: true
-        type: string
+
 
 jobs:
-  build:
-    name: Build Node.js Application
+  terraform:
+    name: Terraform Setup
     runs-on: ubuntu-latest
 
+    defaults:
+      run:
+        working-directory: ${{ inputs.working_directory }}/${{ inputs.environment }}
+
     steps:
-      - name: Checkout Repository
+
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Terraform Setup
+        uses: hashicorp/setup-terraform@v3
         with:
-          node-version: ${{ inputs.node_version }}
-          cache: npm
+          terraform_version: ${{ inputs.terraform_version }}
 
-      - name: Install Dependencies
-        run: npm ci
-
-      - name: Run Build
-        run: ${{ inputs.build_command }}
-
-      - name: Upload Build Artifact
-        uses: actions/upload-artifact@v4
+      - name: Azure Login
+        uses: Azure/login@v2
         with:
-          name: build-${{ github.run_id }}
-          path: ${{ inputs.artifact_path }}
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Terraform Format
+        run: terraform fmt -check
+        continue-on-error: true
+
+      - name: Terraform Init
+        run: terraform init -input=false
+
+      - name: Terraform Validate
+        run: terraform validate
+
+      - name: Terraform Plan
+        run: terraform plan -input=false
