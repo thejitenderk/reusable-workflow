@@ -3,7 +3,7 @@ name: Terraform Infra Pipeline
 on:
   workflow_call:
     secrets:
-      azurelogin:
+      AZURE_CREDENTIALS:
         required: true
     inputs:
 
@@ -49,7 +49,7 @@ jobs:
       - name: Azure Login
         uses: Azure/login@v2
         with:
-          creds: ${{ secrets.azurelogin }}
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Terraform Format
         run: terraform fmt -check
