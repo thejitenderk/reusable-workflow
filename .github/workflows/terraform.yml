@@ -3,12 +3,12 @@ name: Terraform Infra Pipeline
 on:
   workflow_call:
     secrets:
-      AZURE_CLIENT_ID:
-      AZURE_TENANT_ID:
+      AZURE_CLIENT_ID: 
+      AZURE_TENANT_ID:      
       AZURE_SUBSCRIPTION_ID:
-        required: true
+       
+        
     inputs:
-
       terraform_version:
         required: false
         type: string
