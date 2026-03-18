@@ -6,7 +6,6 @@ on:
       AZURE_CLIENT_ID:
       AZURE_TENANT_ID:
       AZURE_SUBSCRIPTION_ID:
-      
         required: true
     inputs:
 
